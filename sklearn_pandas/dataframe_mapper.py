@@ -1,3 +1,4 @@
+import collections
 import contextlib
 from datetime import datetime
 import pandas as pd
@@ -417,8 +418,11 @@ class DataFrameMapper(BaseEstimator, TransformerMixin):
                 columns=self.transformed_names_,
                 index=index)
             # preserve types
+            dtypes_collection = collections.defaultdict(list)
             for col, dtype in zip(self.transformed_names_, dtypes):
-                df_out[col] = df_out[col].astype(dtype)
+                dtypes_collection[dtype].append(col)
+            for dtype, cols in dtypes_collection.items():
+                df_out[cols] = df_out[cols].astype(dtype)
             return df_out
         else:
             return stacked
